@@ -1,11 +1,10 @@
 import { formatMinor } from '../helper/money';
 import { ReviewActivity } from '../reviews/entities/review-activity.entity';
 import { Review } from '../reviews/entities/review.entity';
-import { ReviewState } from '../reviews/enums/review.enums';
+import { toActivity, toReviewState } from '../reviews/reviews.mapper';
 import {
   AmountsDto,
   RelatedRecordDto,
-  ReviewStateDto,
   TransactionDetailDto,
   TransactionListItemDto,
 } from './dto/transaction-response.dto';
@@ -24,21 +23,6 @@ export function toAmounts(record: TransactionRecord): AmountsDto {
     vatMinor: record.vatMinor,
     totalMinor: record.totalMinor,
   };
-}
-
-/** No stored review means nobody has acted yet. */
-export function toReviewState(review: Review | null): ReviewStateDto {
-  if (!review) {
-    return {
-      state: ReviewState.NOT_REVIEWED,
-      note: null,
-      updatedBy: null,
-      updatedAt: null,
-      version: 0,
-    };
-  }
-  const { state, note, updatedBy, updatedAt, version } = review;
-  return { state, note, updatedBy, updatedAt, version };
 }
 
 export function toListItem(
@@ -81,14 +65,6 @@ export function toDetail(
     identityKey: record.identityKey,
     raw: { ...record.raw },
     relatedRecords,
-    activity: activity.map((a) => ({
-      id: a.id,
-      action: a.action,
-      fromState: a.fromState,
-      toState: a.toState,
-      note: a.note,
-      reviewerId: a.reviewerId,
-      createdAt: a.createdAt,
-    })),
+    activity: activity.map(toActivity),
   };
 }

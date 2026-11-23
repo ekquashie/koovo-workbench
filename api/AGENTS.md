@@ -55,6 +55,12 @@ A domain module is `src/<name>/` with `<name>.module.ts`, `<name>.controller.ts`
   input with `parseMinor` (decimal string → pence), print with `formatMinor`.
 - **Imports** go through `ImportsService.import()` only (the seed too).
   After changing stored records, call `ValidationService.revalidateAll()`.
+- **Reviewer:** guard write routes with `@UseGuards(ReviewerGuard)` and read
+  the user with `@CurrentReviewer()`. Business-rule refusals are 422, stale
+  `expectedVersion` is 409.
+- **Decorator order:** class-validator shows the first failing constraint,
+  and stacked decorators register bottom-up; put `IsString`/`IsDefined`
+  lowest (or use `applyDecorators` in reading order).
 - **Config:** new env vars go in `config/configuration.ts` **and** `.env.example`.
 - Short doc comments that explain *why*; no noise comments.
 

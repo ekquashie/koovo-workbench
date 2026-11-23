@@ -7,6 +7,7 @@ import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { LoggerModule } from './logger/logger.module';
 import { StorageModule } from './storage/storage.module';
 import { ImportsModule } from './imports/imports.module';
+import { ReviewsModule } from './reviews/reviews.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { AppController } from './app.controller';
 
@@ -17,6 +18,7 @@ import { AppController } from './app.controller';
     StorageModule,
     TransactionsModule,
     ImportsModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [

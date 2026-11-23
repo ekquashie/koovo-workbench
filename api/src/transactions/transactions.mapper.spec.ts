@@ -1,7 +1,8 @@
 import { ReviewState } from '../reviews/enums/review.enums';
 import { aRaw, aReview, recordsFromRaw } from '../testing/fixtures';
 import { Review } from '../reviews/entities/review.entity';
-import { toAmounts, toReviewState } from './transactions.mapper';
+import { toReviewState } from '../reviews/reviews.mapper';
+import { toAmounts } from './transactions.mapper';
 
 describe('transactions mapper', () => {
   it('sends amounts as pence and as 2 d.p. strings', () => {
