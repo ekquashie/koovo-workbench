@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { transactionKeys } from "../query-keys";
 import type { TransactionFilters } from "../types";
 import { extractResponseData } from "../utils";
@@ -15,7 +15,8 @@ export const useTransactionsQuery = (filters: TransactionFilters) =>
     queryKey: transactionKeys.list(filters),
     queryFn: ({ signal }) =>
       getTransactions(filters, { signal }).then(extractResponseData),
-    placeholderData: keepPreviousData,
+    // Same as keepPreviousData, written inline so TS infers the data type.
+    placeholderData: (previous) => previous,
   });
 
 export const useTransactionSummaryQuery = (clientId?: string) =>
@@ -23,7 +24,8 @@ export const useTransactionSummaryQuery = (clientId?: string) =>
     queryKey: transactionKeys.summary(clientId),
     queryFn: ({ signal }) =>
       getTransactionSummary(clientId, { signal }).then(extractResponseData),
-    placeholderData: keepPreviousData,
+    // Same as keepPreviousData, written inline so TS infers the data type.
+    placeholderData: (previous) => previous,
   });
 
 /** Idle until a record is selected. */

@@ -33,9 +33,13 @@ src/
   lib/                               cn(), config, query client, zod form-schemas
   components/ui/                     small hand-written primitives (no shadcn)
   components/forms/                  react-hook-form + zod forms
-  components/review/                 workbench screens
+  components/review/                 workbench screens (workbench.tsx is the page)
   hooks/  store/                     custom hooks, zustand stores
-  test/                              Vitest setup, QueryClient wrapper, axios fakes
+                                     (workbench-store: filters + selection;
+                                      reviewer-store: persisted reviewer)
+  lib/labels.ts                      accountant-facing names for API enums
+  test/                              Vitest setup, render helper, fake API
+                                     (fixtures = the seeded R001–R011)
 ```
 
 ## Using the API layer
@@ -58,3 +62,15 @@ review.mutate({ transactionId, reviewerId: "rev-ama",
 - Errors: `getErrorMessage` for toasts, `getFieldErrors` for form fields
   (400), `isConflictError` for 409 "someone else changed it, reload".
 - Cache keys live in `query-keys.ts`; mutations invalidate through them.
+
+## The screen
+
+- **Reviewing as**: choose Ama or Kofi (remembered in localStorage). Needed
+  before any review action.
+- **Summary cards**: Valid / Needs attention / Excluded for the chosen
+  client. Click a card to filter by that status; click again to clear.
+- **Filters**: client and validation status; *Clear filters* resets both.
+- **Table**: one row per imported record (repeats included), amounts in £
+  exactly as the API sends them, `—` for missing, issue names under the
+  validation badge (hover for the full message), review state separately.
+  Click a row (or Tab to the record and press Enter) to select it.
