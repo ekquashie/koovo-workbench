@@ -8,7 +8,7 @@ import {
   IssueCode,
   ValidationStatus,
 } from '../../transactions/enums/validation.enums';
-import { aBatch, aRecordDraft, aReview } from '../fixtures';
+import { aBatch, aRecordDraft, aReview } from '../../testing/fixtures';
 import { VersionConflictError } from '../storage.errors';
 import { InMemoryImportBatchRepository } from './import-batch.repository';
 import { InMemoryReviewActivityRepository } from './review-activity.repository';

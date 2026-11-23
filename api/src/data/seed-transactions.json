@@ -1,0 +1,136 @@
+{
+  "records": [
+    {
+      "record": "R001",
+      "client": "C01",
+      "source": "Xero",
+      "sourceId": "X-101",
+      "type": "Bill",
+      "status": "Posted",
+      "supplier": "Westline Office",
+      "subtotal": "100.00",
+      "vat": "20.00",
+      "total": "120.00"
+    },
+    {
+      "record": "R002",
+      "client": "C01",
+      "source": "Sage",
+      "sourceId": "S-201",
+      "type": "Bill",
+      "status": "Posted",
+      "supplier": "ByteCloud",
+      "subtotal": "200.00",
+      "vat": "40.00",
+      "total": "240.00"
+    },
+    {
+      "record": "R003",
+      "client": "C01",
+      "source": "Xero",
+      "sourceId": "X-102",
+      "type": "Bill",
+      "status": "Posted",
+      "supplier": "Global Parts",
+      "subtotal": "300.00",
+      "vat": "60.00",
+      "total": "365.00"
+    },
+    {
+      "record": "R004",
+      "client": "C01",
+      "source": "Sage",
+      "sourceId": "S-202",
+      "type": "Bill",
+      "status": "Posted",
+      "supplier": "-",
+      "subtotal": "120.00",
+      "vat": "24.00",
+      "total": "144.00"
+    },
+    {
+      "record": "R005",
+      "client": "C01",
+      "source": "Xero",
+      "sourceId": "X-101",
+      "type": "Bill",
+      "status": "Posted",
+      "supplier": "Westline Office",
+      "subtotal": "100.00",
+      "vat": "20.00",
+      "total": "120.00"
+    },
+    {
+      "record": "R006",
+      "client": "C01",
+      "source": "Sage",
+      "sourceId": "S-203",
+      "type": "Bill",
+      "status": "Draft",
+      "supplier": "City Couriers",
+      "subtotal": "50.00",
+      "vat": "10.00",
+      "total": "60.00"
+    },
+    {
+      "record": "R007",
+      "client": "C02",
+      "source": "Xero",
+      "sourceId": "X-101",
+      "type": "Bill",
+      "status": "Posted",
+      "supplier": "Westline Office",
+      "subtotal": "400.00",
+      "vat": "80.00",
+      "total": "480.00"
+    },
+    {
+      "record": "R008",
+      "client": "C01",
+      "source": "Xero",
+      "sourceId": "X-103",
+      "type": "Bill",
+      "status": "Posted",
+      "supplier": "Delta Supplies",
+      "subtotal": "90.00",
+      "vat": "18.00",
+      "total": "108.00"
+    },
+    {
+      "record": "R009",
+      "client": "C01",
+      "source": "Sage",
+      "sourceId": "S-204",
+      "type": "Bill",
+      "status": "Void",
+      "supplier": "Widgets Ltd",
+      "subtotal": "80.00",
+      "vat": "0.00",
+      "total": "80.00"
+    },
+    {
+      "record": "R010",
+      "client": "C01",
+      "source": "Xero",
+      "sourceId": "X-104",
+      "type": "Credit",
+      "status": "Posted",
+      "supplier": "Caldera",
+      "subtotal": "-100.00",
+      "vat": "-20.00",
+      "total": "-120.00"
+    },
+    {
+      "record": "R011",
+      "client": "C01",
+      "source": "Xero",
+      "sourceId": "X-105",
+      "type": "Bill",
+      "status": "Posted",
+      "supplier": "Alpha Inc",
+      "subtotal": "-30.00",
+      "vat": "-6.00",
+      "total": "-36.00"
+    }
+  ]
+}

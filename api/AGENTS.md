@@ -29,6 +29,9 @@ src/
   storage/                 StorageModule (global): abstract repositories +
                            Map-backed implementations, VersionConflictError
   imports/ transactions/ reviews/   enums/ + entities/ (plain classes)
+  transactions/validation/ pure validation engine (parse, rules, repeats)
+  data/                    seed-transactions.json (the brief's dataset)
+  testing/                 test builders (aRaw, recordsFromRaw); not built
 test/*.integration-spec.ts
 ```
 
@@ -47,7 +50,8 @@ A domain module is `src/<name>/` with `<name>.module.ts`, `<name>.controller.ts`
 - **Versioning:** `/api/v1/...`; only health is `VERSION_NEUTRAL`.
 - **Storage:** inject the abstract repository (e.g. `ReviewRepository`),
   never an `InMemory*` class. Map `VersionConflictError` to 409.
-- **Money:** compare and sum in integer minor units (`toMinor`), never floats.
+- **Money:** compare and sum in integer minor units, never floats. Parse
+  input with `parseMinor` (decimal string → pence), print with `formatMinor`.
 - **Config:** new env vars go in `config/configuration.ts` **and** `.env.example`.
 - Short doc comments that explain *why*; no noise comments.
 
