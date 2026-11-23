@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
+import { TransactionsController } from './transactions.controller';
+import { TransactionsService } from './transactions.service';
 import { ValidationService } from './validation.service';
 
-/** Read API arrives in task 5; for now it owns re-validation. */
 @Module({
-  providers: [ValidationService],
+  controllers: [TransactionsController],
+  providers: [TransactionsService, ValidationService],
   exports: [ValidationService],
 })
 export class TransactionsModule {}

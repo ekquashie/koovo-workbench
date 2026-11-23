@@ -35,6 +35,14 @@ All under `/api/v1` and wrapped as `{ code, message, data }`. Full docs at
 | GET | `/api/health` | liveness (unversioned) |
 | POST | `/api/v1/imports` | import `{ "records": [...] }` (max 1000) and re-validate everything |
 | GET | `/api/v1/imports` | import batches, oldest first |
+| GET | `/api/v1/transactions?clientId=&status=` | records with validation + review state, arrival order |
+| GET | `/api/v1/transactions/summary?clientId=` | counts per validation status, plus every client |
+| GET | `/api/v1/transactions/:id` | detail: raw input, amounts, issues, related records, review, history |
+
+Filters are optional and combine; `status` is case-insensitive
+(`VALID`, `NEEDS_ATTENTION`, `EXCLUDED`). Amounts come back as pence
+(`totalMinor: 12000`) and as display strings (`total: "120.00"`); `null`
+means missing in the source.
 
 Import a file of rows shaped like the seed file:
 
