@@ -46,12 +46,15 @@ A domain module is `src/<name>/` with `<name>.module.ts`, `<name>.controller.ts`
 - **Errors:** throw Nest HTTP exceptions with human-readable messages; use
   `FieldValidationException` for per-field errors.
 - **Validation:** every body/query is a DTO with class-validator decorators;
-  trim strings with `@Transform(trim)`.
+  trim strings with `@Transform(trim)`. Exception: `RawTransactionDto` keeps
+  raw input untouched (parsing trims later).
 - **Versioning:** `/api/v1/...`; only health is `VERSION_NEUTRAL`.
 - **Storage:** inject the abstract repository (e.g. `ReviewRepository`),
   never an `InMemory*` class. Map `VersionConflictError` to 409.
 - **Money:** compare and sum in integer minor units, never floats. Parse
   input with `parseMinor` (decimal string → pence), print with `formatMinor`.
+- **Imports** go through `ImportsService.import()` only (the seed too).
+  After changing stored records, call `ValidationService.revalidateAll()`.
 - **Config:** new env vars go in `config/configuration.ts` **and** `.env.example`.
 - Short doc comments that explain *why*; no noise comments.
 

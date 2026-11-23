@@ -6,6 +6,8 @@ import { CustomExceptionsFilter } from './exceptions/exceptions';
 import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { LoggerModule } from './logger/logger.module';
 import { StorageModule } from './storage/storage.module';
+import { ImportsModule } from './imports/imports.module';
+import { TransactionsModule } from './transactions/transactions.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -13,6 +15,8 @@ import { AppController } from './app.controller';
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
     LoggerModule,
     StorageModule,
+    TransactionsModule,
+    ImportsModule,
   ],
   controllers: [AppController],
   providers: [
