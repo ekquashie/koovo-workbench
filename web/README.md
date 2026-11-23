@@ -33,7 +33,10 @@ src/
   lib/                               cn(), config, query client, zod form-schemas
   components/ui/                     small hand-written primitives (no shadcn)
   components/forms/                  react-hook-form + zod forms
-  components/review/                 workbench screens (workbench.tsx is the page)
+  components/table/                  generic DataTable (TanStack Table): header,
+                                     row, toolbar (search), pagination
+  components/review/                 workbench screens (workbench.tsx is the page);
+                                     <x>-columns.tsx = ColumnDef[] per table
   hooks/  store/                     custom hooks, zustand stores
                                      (workbench-store: filters + selection;
                                       reviewer-store: persisted reviewer)
@@ -73,4 +76,14 @@ review.mutate({ transactionId, reviewerId: "rev-ama",
 - **Table**: one row per imported record (repeats included), amounts in £
   exactly as the API sends them, `—` for missing, issue names under the
   validation badge (hover for the full message), review state separately.
-  Click a row (or Tab to the record and press Enter) to select it.
+  Click a column header to sort (amounts sort numerically, missing last);
+  search by record, supplier or source ID; 20 rows per page.
+  Click a row (or Tab to it and press Enter) to open it.
+- **Record panel** (right): why it needs attention (with links to related
+  records), the source row as received next to how it was understood
+  (flagged fields highlighted), the review decision and form, and the
+  history. Escape closes it.
+- **Reviewing**: pick a reviewer first. *Mark reviewed* only works on a
+  Valid record; *Mark needs correction* needs a note (3–500 characters). If
+  someone else changed the record since you opened it, you'll be told and
+  shown the latest.

@@ -9,17 +9,31 @@ import { makeItem, ITEMS } from "@/test/fixtures";
 import { renderWithProviders } from "@/test/render";
 import { Workbench } from "./workbench";
 
+/** Record refs in the table body, top to bottom. */
 const tableRefs = () =>
-  within(screen.getByRole("table"))
-    .getAllByRole("button", { name: /^Open / })
-    .map((b) => b.textContent);
+  within(screen.getByRole("table", { name: /^Transactions/ }))
+    .getAllByRole("row")
+    .slice(1)
+    .map((row) => within(row).getAllByRole("cell")[0].textContent);
+
+/** The body row for a record ref. */
+const rowOf = (ref: string) =>
+  within(screen.getByRole("table", { name: /^Transactions/ }))
+    .getAllByRole("row")
+    .find((row) => within(row).queryAllByRole("cell")[0]?.textContent === ref)!;
 
 const card = (name: RegExp) => screen.getByRole("button", { name });
 
 async function renderWorkbench() {
   const spy = fakeApi();
   renderWithProviders(<Workbench />);
-  await screen.findByRole("table");
+  // Wait for real data: rows loaded and the client options filled in.
+  await screen.findByText("R001");
+  await waitFor(() =>
+    expect(
+      within(screen.getByLabelText("Client")).getAllByRole("option"),
+    ).toHaveLength(3),
+  );
   return spy;
 }
 
@@ -123,9 +137,7 @@ describe("Workbench", () => {
 
     it("explains why a record needs attention", async () => {
       await renderWorkbench();
-      const row = screen
-        .getByRole("button", { name: "Open R003" })
-        .closest("tr")!;
+      const row = rowOf("R003");
       expect(within(row).getByText("Needs attention")).toBeInTheDocument();
       expect(within(row).getByText("Total mismatch")).toHaveAttribute(
         "title",
@@ -135,9 +147,7 @@ describe("Workbench", () => {
 
     it("shows a missing supplier as Missing, not blank", async () => {
       await renderWorkbench();
-      const row = screen
-        .getByRole("button", { name: "Open R004" })
-        .closest("tr")!;
+      const row = rowOf("R004");
       expect(within(row).getByText("Missing")).toBeInTheDocument();
     });
 
@@ -158,26 +168,20 @@ describe("Workbench", () => {
       ]);
       fakeApi([r]);
       renderWithProviders(<Workbench />);
-      const row = (
-        await screen.findByRole("button", { name: "Open R099" })
-      ).closest("tr")!;
+      const row = (await screen.findByText("R099")).closest("tr")!;
       expect(within(row).getByText("missing")).toHaveClass("sr-only");
       expect(within(row).queryByText("0.00")).not.toBeInTheDocument();
     });
 
-    it("shows amounts exactly as the API sends them, including credits", async () => {
+    it("shows amounts exactly as the API sends them, and doesn't colour a credit as an error", async () => {
       await renderWorkbench();
-      const row = screen
-        .getByRole("button", { name: "Open R010" })
-        .closest("tr")!;
-      expect(within(row).getByText("-120.00")).toBeInTheDocument();
+      const total = within(rowOf("R010")).getByText("-120.00");
+      expect(total.className).not.toMatch(/red/);
     });
 
     it("labels excluded records with their source status", async () => {
       await renderWorkbench();
-      const row = screen
-        .getByRole("button", { name: "Open R006" })
-        .closest("tr")!;
+      const row = rowOf("R006");
       expect(within(row).getByText("Excluded")).toBeInTheDocument();
       expect(within(row).getByText("Draft")).toBeInTheDocument();
     });
@@ -203,9 +207,7 @@ describe("Workbench", () => {
         ),
       ]);
       renderWithProviders(<Workbench />);
-      const row = (
-        await screen.findByRole("button", { name: "Open R001" })
-      ).closest("tr")!;
+      const row = (await screen.findByText("R001")).closest("tr")!;
       expect(within(row).getByText("Valid")).toBeInTheDocument();
       expect(within(row).getByText("Reviewed")).toBeInTheDocument();
     });
@@ -215,12 +217,9 @@ describe("Workbench", () => {
       await renderWorkbench();
 
       await user.click(screen.getByText("Global Parts"));
-      expect(
-        screen.getByRole("button", { name: "Open R003" }).closest("tr"),
-      ).toHaveAttribute("aria-selected", "true");
-      await screen.findByText("Selected R003.");
+      expect(rowOf("R003")).toHaveAttribute("aria-selected", "true");
 
-      screen.getByRole("button", { name: "Open R008" }).focus();
+      rowOf("R008").focus();
       await user.keyboard("{Enter}");
       expect(useWorkbenchStore.getState().selectedId).toBe("id-R008");
     });

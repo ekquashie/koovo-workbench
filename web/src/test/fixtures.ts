@@ -1,5 +1,7 @@
 import type {
   IssueCode,
+  ReviewActivity,
+  TransactionDetail,
   ReviewState,
   SourceStatus,
   TransactionListItem,
@@ -242,6 +244,48 @@ export function makeItem(
 }
 
 export const ITEMS: TransactionListItem[] = ROWS.map((row) => makeItem(row));
+// R005 is a repeat of R001, as the API reports it.
+ITEMS[4].validation.issues[0].relatedRecordIds = ["id-R001"];
+ITEMS[4].validation.issues[0].message =
+  "Exact repeat of R001 (same client, source, source ID and values). Kept for inspection, not processed again.";
+ITEMS[2].validation.issues[0].fields = ["total"];
+
+const SOURCE_RAW = { XERO: "Xero", SAGE: "Sage" } as const;
+const TYPE_RAW = { BILL: "Bill", CREDIT: "Credit" } as const;
+const STATUS_RAW = { POSTED: "Posted", DRAFT: "Draft", VOID: "Void" } as const;
+
+/** The detail response for a list item, with raw input as the source sent it. */
+export function makeDetail(
+  item: TransactionListItem,
+  all: TransactionListItem[],
+  activity: ReviewActivity[] = [],
+): TransactionDetail {
+  const relatedIds = [
+    ...new Set(item.validation.issues.flatMap((i) => i.relatedRecordIds)),
+  ];
+  return {
+    ...item,
+    importId: "batch-1",
+    identityKey: `${item.clientId}|${item.source}|${item.sourceId}`,
+    raw: {
+      record: item.recordRef,
+      client: item.clientId,
+      source: SOURCE_RAW[item.source],
+      sourceId: item.sourceId,
+      type: TYPE_RAW[item.type],
+      status: STATUS_RAW[item.sourceStatus],
+      supplier: item.supplierName ?? "-",
+      subtotal: item.amounts.subtotal ?? "-",
+      vat: item.amounts.vat ?? "-",
+      total: item.amounts.total ?? "-",
+    },
+    relatedRecords: relatedIds.map((id) => ({
+      id,
+      recordRef: all.find((i) => i.id === id)?.recordRef ?? id,
+    })),
+    activity,
+  };
+}
 
 export function summaryOf(
   items: TransactionListItem[],

@@ -11,7 +11,5 @@ export const Amount = ({ value }: { value: string | null }) =>
       <span className="sr-only">missing</span>
     </span>
   ) : (
-    <span className={value.startsWith("-") ? "text-red-700" : undefined}>
-      {value}
-    </span>
+    <span>{value}</span>
   );
