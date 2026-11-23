@@ -25,13 +25,36 @@ pnpm dev                # http://localhost:5173 (start the API first)
 src/
   main.tsx, App.tsx, providers.tsx   entry, root view, React Query + toasts
   integration/                       API layer, one folder per domain:
-    client.ts endpoints.ts types.ts utils.ts
+    client.ts endpoints.ts types.ts utils.ts query-keys.ts
     <domain>/api-functions.ts        axios calls (typed, unwrapped by callers)
     <domain>/queries.ts              TanStack Query hooks
     <domain>/mutations.ts            TanStack mutations + cache invalidation
+    domains: transactions, reviews, reviewers, imports, health
   lib/                               cn(), config, query client, zod form-schemas
   components/ui/                     small hand-written primitives (no shadcn)
   components/forms/                  react-hook-form + zod forms
   components/review/                 workbench screens
   hooks/  store/                     custom hooks, zustand stores
+  test/                              Vitest setup, QueryClient wrapper, axios fakes
 ```
+
+## Using the API layer
+
+```ts
+import {
+  useTransactionsQuery, useTransactionSummaryQuery, useTransactionQuery,
+  useReviewersQuery, useCreateReviewMutation, getFieldErrors, isConflictError,
+} from "@/integration";
+
+const { data } = useTransactionsQuery({ clientId: "C01", status: "NEEDS_ATTENTION" });
+const review = useCreateReviewMutation();
+review.mutate({ transactionId, reviewerId: "rev-ama",
+  body: { action: "MARK_REVIEWED", expectedVersion: detail.review.version } });
+```
+
+- Hooks return unwrapped `data` (no `{ code, message }` envelope).
+- Money: show `amounts.total` (a string); use `amounts.totalMinor` (pence)
+  for any maths or sorting. `null` = missing.
+- Errors: `getErrorMessage` for toasts, `getFieldErrors` for form fields
+  (400), `isConflictError` for 409 "someone else changed it, reload".
+- Cache keys live in `query-keys.ts`; mutations invalidate through them.
