@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* Small set of semantic tokens; visual polish is out of scope for the brief. */
+@theme {
+  --color-valid: #15803d;
+  --color-attention: #b45309;
+  --color-excluded: #6b7280;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
