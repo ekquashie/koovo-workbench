@@ -26,6 +26,9 @@ src/
   interceptors/            ResponseInterceptor ({code,message,data})
   logger/                  AppLogger (winston, log/app)
   helper/                  money.ts, transforms.ts, utils.ts
+  storage/                 StorageModule (global): abstract repositories +
+                           Map-backed implementations, VersionConflictError
+  imports/ transactions/ reviews/   enums/ + entities/ (plain classes)
 test/*.integration-spec.ts
 ```
 
@@ -42,6 +45,8 @@ A domain module is `src/<name>/` with `<name>.module.ts`, `<name>.controller.ts`
 - **Validation:** every body/query is a DTO with class-validator decorators;
   trim strings with `@Transform(trim)`.
 - **Versioning:** `/api/v1/...`; only health is `VERSION_NEUTRAL`.
+- **Storage:** inject the abstract repository (e.g. `ReviewRepository`),
+  never an `InMemory*` class. Map `VersionConflictError` to 409.
 - **Money:** compare and sum in integer minor units (`toMinor`), never floats.
 - **Config:** new env vars go in `config/configuration.ts` **and** `.env.example`.
 - Short doc comments that explain *why*; no noise comments.
