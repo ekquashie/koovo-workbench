@@ -1,7 +1,7 @@
 # Koovo Review Workbench API
 
 NestJS API that validates accounting transactions and records review decisions.
-Part of the `koovo-workbench` monorepo; see the root README and `docs/`.
+Part of the `koovo-workbench` monorepo; see the root README.
 
 ## Run
 
@@ -16,7 +16,12 @@ pnpm start:dev        # http://localhost:4000/api, docs at /api/docs
 ```bash
 pnpm test               # unit
 pnpm test:integration   # HTTP through the full app
+pnpm typecheck          # tsc, including tests
+pnpm lint:check         # ESLint without fixing (CI); `pnpm lint` fixes
+pnpm format:check       # Prettier without writing (CI); `pnpm format` writes
 ```
+
+From the repo root, `pnpm dev` starts this API and the web app together.
 
 ## Data on startup
 

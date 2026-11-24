@@ -1,0 +1,27 @@
+{
+  "name": "koovo-workbench",
+  "private": true,
+  "description": "Accounting Data Review Workbench: NestJS API (api/) + React UI (web/)",
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "postinstall": "pnpm --dir api install && pnpm --dir web install",
+    "prepare": "husky",
+    "dev": "concurrently --names api,web --prefix-colors blue,magenta --kill-others-on-fail \"pnpm --dir api start:dev\" \"pnpm --dir web dev\"",
+    "build": "pnpm --dir api build && pnpm --dir web build",
+    "typecheck": "pnpm --dir api typecheck && pnpm --dir web typecheck",
+    "lint": "pnpm --dir api lint:check && pnpm --dir web lint",
+    "format": "pnpm --dir api format && pnpm --dir web format",
+    "format:check": "pnpm --dir api format:check && pnpm --dir web format:check",
+    "test": "pnpm --dir api test && pnpm --dir api test:integration && pnpm --dir web test",
+    "e2e": "pnpm --dir web e2e",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.2"
+  }
+}

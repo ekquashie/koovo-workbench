@@ -10,13 +10,17 @@ cp .env.example .env    # VITE_API_URL=http://localhost:4000/api/v1
 pnpm dev                # http://localhost:5173 (start the API first)
 ```
 
+Or from the repo root: `pnpm dev` starts the API and this app together.
+
 ## Scripts
 
 | Command | What it does |
 |---|---|
 | `pnpm dev` | Dev server on :5173 |
 | `pnpm build` | Type-check and production build |
+| `pnpm typecheck` | TypeScript only |
 | `pnpm lint` | ESLint |
+| `pnpm format` / `pnpm format:check` | Prettier (write / check only, as CI does) |
 | `pnpm test` | Vitest (jsdom + Testing Library, axe-core accessibility checks) |
 | `pnpm e2e` | Playwright: real API + built UI in Chrome (ports 4010/5180) |
 
