@@ -9,7 +9,7 @@ export const ValidationCell = ({ item }: { item: TransactionListItem }) => {
     <div className="flex flex-col items-start gap-1">
       <ValidationBadge status={status} />
       {status === "EXCLUDED" && (
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-slate-600">
           {SOURCE_STATUS_LABEL[item.sourceStatus]}
         </span>
       )}

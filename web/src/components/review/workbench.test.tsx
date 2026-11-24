@@ -43,11 +43,9 @@ describe("Workbench", () => {
   describe("summary cards", () => {
     it("shows totals for Valid, Needs attention and Excluded", async () => {
       await renderWorkbench();
-      await waitFor(() =>
-        expect(card(/^Valid: 5 records/)).toBeInTheDocument(),
-      );
-      expect(card(/^Needs attention: 4 records/)).toBeInTheDocument();
-      expect(card(/^Excluded: 2 records/)).toBeInTheDocument();
+      await waitFor(() => expect(card(/^Valid 5 records/)).toBeInTheDocument());
+      expect(card(/^Needs attention 4 records/)).toBeInTheDocument();
+      expect(card(/^Excluded 2 records/)).toBeInTheDocument();
     });
 
     it("filters the table by status when a card is clicked, and clears on a second click", async () => {
@@ -73,10 +71,8 @@ describe("Workbench", () => {
       await user.selectOptions(screen.getByLabelText("Client"), "C02");
 
       await waitFor(() => expect(tableRefs()).toEqual(["R007"]));
-      await waitFor(() =>
-        expect(card(/^Valid: 1 records/)).toBeInTheDocument(),
-      );
-      expect(card(/^Needs attention: 0 records/)).toBeInTheDocument();
+      await waitFor(() => expect(card(/^Valid 1 records/)).toBeInTheDocument());
+      expect(card(/^Needs attention 0 records/)).toBeInTheDocument();
       expect(requestsTo(spy, "transactions").at(-1)).toEqual({
         clientId: "C02",
         status: undefined,

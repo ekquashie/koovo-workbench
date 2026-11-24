@@ -47,7 +47,7 @@ export const transactionColumns: ColumnDef<Item, never>[] = [
     cell: ({ row }) => (
       <>
         {SOURCE_LABEL[row.original.source]}
-        <span className="block font-mono text-xs text-slate-500">
+        <span className="block font-mono text-xs text-slate-600">
           {row.original.sourceId}
         </span>
       </>
@@ -61,7 +61,7 @@ export const transactionColumns: ColumnDef<Item, never>[] = [
     sortUndefined: "last",
     cell: ({ row }) =>
       row.original.supplierName ?? (
-        <span className="text-slate-400 italic">Missing</span>
+        <span className="text-slate-600 italic">Missing</span>
       ),
   },
   amountColumn("subtotal", "Subtotal £", "subtotal"),

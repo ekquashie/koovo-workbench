@@ -2,7 +2,7 @@ import type { TransactionDetail } from "@/integration";
 import { SOURCE_LABEL, SOURCE_STATUS_LABEL, TYPE_LABEL } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
-const missing = <span className="text-slate-400 italic">Missing</span>;
+const missing = <span className="text-slate-500 italic">Missing</span>;
 
 /**
  * The row exactly as received next to how it was understood, so the

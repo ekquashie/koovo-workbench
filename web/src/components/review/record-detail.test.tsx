@@ -170,6 +170,33 @@ describe("Record detail panel", () => {
       ).toBeInTheDocument();
     });
 
+    it("never changes the validation counts: review state is separate", async () => {
+      const { panel, user } = await openRecord("R001");
+      // The summary cards are named "Valid 5 records" etc.
+      const expectCounts = () => {
+        for (const name of [
+          "Valid 5 records",
+          "Needs attention 4 records",
+          "Excluded 2 records",
+        ]) {
+          expect(screen.getByRole("button", { name })).toBeInTheDocument();
+        }
+      };
+      await waitFor(expectCounts);
+
+      await user.click(
+        within(panel).getByRole("button", { name: "Mark reviewed" }),
+      );
+      // The table row shows the new review state…
+      const table = screen.getByRole("table", { name: /^Transactions/ });
+      await waitFor(() =>
+        expect(within(table).getByText("Reviewed")).toBeInTheDocument(),
+      );
+      // …while validation and the counts are untouched.
+      expect(within(table).getAllByText("Valid")).toHaveLength(5);
+      expectCounts();
+    });
+
     it("won't mark a record with issues Reviewed, and says why", async () => {
       const { api, panel } = await openRecord("R003");
       expect(

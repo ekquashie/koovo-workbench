@@ -26,9 +26,15 @@ Open http://localhost:5173.
 ## Tests
 
 ```bash
-cd api && pnpm test && pnpm test:integration
-cd web && pnpm test
+cd api && pnpm test && pnpm test:integration   # unit + HTTP through the full app
+cd web && pnpm test                            # components, hooks, a11y (Vitest)
+cd web && pnpm e2e                             # real API + built UI in Chrome
 ```
+
+`pnpm e2e` (Playwright) starts its own API on :4010 and UI on :5180, so it
+doesn't clash with dev servers. It uses your installed Google Chrome; without
+Chrome, run `pnpm exec playwright install chromium` once and use
+`PW_CHANNEL=chromium pnpm e2e`.
 
 ## Docs
 

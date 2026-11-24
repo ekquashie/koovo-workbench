@@ -17,7 +17,8 @@ pnpm dev                # http://localhost:5173 (start the API first)
 | `pnpm dev` | Dev server on :5173 |
 | `pnpm build` | Type-check and production build |
 | `pnpm lint` | ESLint |
-| `pnpm test` | Vitest (jsdom + Testing Library) |
+| `pnpm test` | Vitest (jsdom + Testing Library, axe-core accessibility checks) |
+| `pnpm e2e` | Playwright: real API + built UI in Chrome (ports 4010/5180) |
 
 ## Structure
 
@@ -42,7 +43,8 @@ src/
                                       reviewer-store: persisted reviewer)
   lib/labels.ts                      accountant-facing names for API enums
   test/                              Vitest setup, render helper, fake API
-                                     (fixtures = the seeded R001–R011)
+                                     (fixtures = the seeded R001–R011), axe helper
+e2e/                                 Playwright specs (playwright.config.ts)
 ```
 
 ## Using the API layer

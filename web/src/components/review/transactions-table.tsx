@@ -44,7 +44,7 @@ export const TransactionsTable = () => {
         onRowClick={(row) => select(row.id)}
         selectedRowId={selectedId}
         rowClassName={(row) =>
-          row.validation.status === "EXCLUDED" ? "text-slate-500" : undefined
+          row.validation.status === "EXCLUDED" ? "text-slate-600" : undefined
         }
         empty={
           <span className="inline-flex items-center gap-3">
