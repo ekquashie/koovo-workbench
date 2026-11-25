@@ -302,6 +302,6 @@ export function summaryOf(
 }
 
 export const REVIEWERS = [
-  { id: "rev-ama", name: "Ama Mensah" },
-  { id: "rev-kofi", name: "Kofi Asante" },
+  { id: "rev-eyram", name: "Eyram Quashie" },
+  { id: "rev-shiela", name: "Shiela Plange" },
 ];

@@ -62,7 +62,7 @@ export const aReview = (over: Partial<NewReview> = {}): NewReview => ({
   recordId: 'rec-1',
   state: ReviewState.REVIEWED,
   note: null,
-  updatedBy: 'rev-ama',
+  updatedBy: 'rev-eyram',
   updatedAt: '2026-11-23T10:00:00.000Z',
   ...over,
 });

@@ -124,18 +124,21 @@ describe('ReviewRepository (in-memory)', () => {
 
   it('refuses a write based on a stale version and keeps the stored review', async () => {
     const repo = new InMemoryReviewRepository();
-    await repo.save(aReview({ updatedBy: 'rev-ama' }), 0);
+    await repo.save(aReview({ updatedBy: 'rev-eyram' }), 0);
 
-    // Kofi also read "no review yet" (version 0) before Ama saved.
+    // Shiela also read "no review yet" (version 0) before Eyram saved.
     await expect(
       repo.save(
-        aReview({ state: ReviewState.NEEDS_CORRECTION, updatedBy: 'rev-kofi' }),
+        aReview({
+          state: ReviewState.NEEDS_CORRECTION,
+          updatedBy: 'rev-shiela',
+        }),
         0,
       ),
     ).rejects.toBeInstanceOf(VersionConflictError);
 
     const stored = await repo.findByRecordId('rec-1');
-    expect(stored).toMatchObject({ updatedBy: 'rev-ama', version: 1 });
+    expect(stored).toMatchObject({ updatedBy: 'rev-eyram', version: 1 });
   });
 
   it('returns null when a record has never been reviewed', async () => {
@@ -153,7 +156,7 @@ describe('ReviewActivityRepository (in-memory)', () => {
       fromState: ReviewState.NOT_REVIEWED,
       toState: ReviewState.REVIEWED,
       note: null,
-      reviewerId: 'rev-ama',
+      reviewerId: 'rev-eyram',
       createdAt: '2026-11-23T10:00:00.000Z',
     });
 
@@ -180,10 +183,10 @@ describe('ReviewerRepository (in-memory)', () => {
   it('serves the fixed mock list', async () => {
     const repo = new InMemoryReviewerRepository();
     expect((await repo.findAll()).map((r) => r.id)).toEqual([
-      'rev-ama',
-      'rev-kofi',
+      'rev-eyram',
+      'rev-shiela',
     ]);
-    expect((await repo.findById('rev-kofi'))?.name).toBe('Kofi Asante');
+    expect((await repo.findById('rev-shiela'))?.name).toBe('Shiela Plange');
     expect(await repo.findById('rev-nobody')).toBeNull();
   });
 });

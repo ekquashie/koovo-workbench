@@ -14,7 +14,7 @@ describe('Reviews (integration)', () => {
   const review = (
     ref: string,
     body: object,
-    reviewer: string | null = 'rev-ama',
+    reviewer: string | null = 'rev-eyram',
   ) => {
     const req = request(server()).post(
       `/api/v1/transactions/${ids.get(ref) ?? ref}/reviews`,
@@ -59,8 +59,8 @@ describe('Reviews (integration)', () => {
     it('lists the mock reviewers', async () => {
       const res = await request(server()).get('/api/v1/reviewers').expect(200);
       expect(res.body.data).toEqual([
-        { id: 'rev-ama', name: 'Ama Mensah' },
-        { id: 'rev-kofi', name: 'Kofi Asante' },
+        { id: 'rev-eyram', name: 'Eyram Quashie' },
+        { id: 'rev-shiela', name: 'Shiela Plange' },
       ]);
     });
   });
@@ -79,9 +79,9 @@ describe('Reviews (integration)', () => {
     });
 
     it('records who acted', async () => {
-      const res = await review('R001', reviewed(), 'rev-kofi').expect(201);
-      expect(res.body.data.review.updatedBy).toBe('rev-kofi');
-      expect(res.body.data.activity.reviewerId).toBe('rev-kofi');
+      const res = await review('R001', reviewed(), 'rev-shiela').expect(201);
+      expect(res.body.data.review.updatedBy).toBe('rev-shiela');
+      expect(res.body.data.activity.reviewerId).toBe('rev-shiela');
     });
   });
 
@@ -93,7 +93,7 @@ describe('Reviews (integration)', () => {
       expect(res.body.data.review).toEqual({
         state: 'REVIEWED',
         note: null,
-        updatedBy: 'rev-ama',
+        updatedBy: 'rev-eyram',
         updatedAt: expect.any(String),
         version: 1,
       });
@@ -103,7 +103,7 @@ describe('Reviews (integration)', () => {
         fromState: 'NOT_REVIEWED',
         toState: 'REVIEWED',
         note: null,
-        reviewerId: 'rev-ama',
+        reviewerId: 'rev-eyram',
         createdAt: res.body.data.review.updatedAt,
       });
 
@@ -204,7 +204,7 @@ describe('Reviews (integration)', () => {
   describe('Needs Correction → Reviewed (D5)', () => {
     it('is allowed once the record is valid, and the history keeps both steps', async () => {
       await review('R001', needsCorrection('Check with client')).expect(201);
-      await review('R001', reviewed(1), 'rev-kofi').expect(201);
+      await review('R001', reviewed(1), 'rev-shiela').expect(201);
 
       const history = (await detail('R001')).activity;
       expect(
@@ -216,8 +216,8 @@ describe('Reviews (integration)', () => {
           ],
         ),
       ).toEqual([
-        ['NOT_REVIEWED', 'NEEDS_CORRECTION', 'rev-ama'],
-        ['NEEDS_CORRECTION', 'REVIEWED', 'rev-kofi'],
+        ['NOT_REVIEWED', 'NEEDS_CORRECTION', 'rev-eyram'],
+        ['NEEDS_CORRECTION', 'REVIEWED', 'rev-shiela'],
       ]);
     });
 
@@ -247,22 +247,22 @@ describe('Reviews (integration)', () => {
 
   describe('stale screens (optimistic concurrency)', () => {
     it('409 when someone else changed the review first, and keeps their decision', async () => {
-      await review('R002', reviewed(0), 'rev-ama').expect(201);
+      await review('R002', reviewed(0), 'rev-eyram').expect(201);
 
-      // Kofi's screen still shows version 0.
+      // Shiela's screen still shows version 0.
       const res = await review(
         'R002',
         needsCorrection('Looks off', 0),
-        'rev-kofi',
+        'rev-shiela',
       ).expect(409);
       expect(res.body.message).toBe(
-        'R002 was updated by Ama Mensah since you loaded it. Reload to see the latest decision.',
+        'R002 was updated by Eyram Quashie since you loaded it. Reload to see the latest decision.',
       );
 
       const r002 = await detail('R002');
       expect(r002.review).toMatchObject({
         state: 'REVIEWED',
-        updatedBy: 'rev-ama',
+        updatedBy: 'rev-eyram',
         version: 1,
       });
       expect(r002.activity).toHaveLength(1);
@@ -274,8 +274,8 @@ describe('Reviews (integration)', () => {
 
     it('lets exactly one of two simultaneous decisions win', async () => {
       const results = await Promise.all([
-        review('R001', reviewed(0), 'rev-ama'),
-        review('R001', needsCorrection('Hold on', 0), 'rev-kofi'),
+        review('R001', reviewed(0), 'rev-eyram'),
+        review('R001', needsCorrection('Hold on', 0), 'rev-shiela'),
       ]);
       expect(results.map((r) => r.status).sort()).toEqual([201, 409]);
       expect((await detail('R001')).activity).toHaveLength(1);

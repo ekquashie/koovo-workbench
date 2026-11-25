@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
+import { ReviewerPicker } from "@/components/review/reviewer-picker";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -112,9 +113,12 @@ export const ReviewForm = ({ record }: { record: TransactionDetail }) => {
       aria-label={`Review ${record.recordRef}`}
     >
       {!reviewer && (
-        <p className="rounded-md bg-amber-50 p-2 text-sm text-amber-900">
-          Choose who is reviewing (top right) before recording a decision.
-        </p>
+        // The picker is right here as well as in the header, so the reviewer
+        // can be chosen without leaving the record.
+        <div className="flex flex-col gap-2 rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+          <p>Choose who is reviewing before recording a decision.</p>
+          <ReviewerPicker label="Choose reviewer" />
+        </div>
       )}
 
       <div className="flex flex-col gap-1">

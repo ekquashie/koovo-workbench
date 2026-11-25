@@ -54,6 +54,26 @@ test("filters by validation status and by client", async ({ page }) => {
   await expect.poll(() => refs(page)).toHaveLength(11);
 });
 
+test("keeps filters in the URL: shareable and kept on reload", async ({
+  page,
+}) => {
+  await card(page, "Needs attention").click();
+  await page.getByLabel("Client").selectOption("C01");
+  await expect(page).toHaveURL(/\?status=needs_attention&client=C01$/);
+
+  // Reload, and a fresh tab opening the same link: same filtered view.
+  await page.reload();
+  await expect.poll(() => refs(page)).toEqual(["R003", "R004", "R005", "R011"]);
+  const shared = await page.context().newPage();
+  await shared.goto("/?client=C02&status=VALID");
+  await expect.poll(() => refs(shared)).toEqual(["R007"]);
+  await expect(shared.getByLabel("Validation status")).toHaveValue("VALID");
+  await shared.close();
+
+  await page.getByRole("button", { name: "Clear filters" }).click();
+  await expect(page).toHaveURL(/\/$/);
+});
+
 test("explains a repeated record and links to the original", async ({
   page,
 }) => {
@@ -71,7 +91,7 @@ test("explains a repeated record and links to the original", async ({
 });
 
 test("reviews records without changing validation counts", async ({ page }) => {
-  await page.getByLabel("Reviewing as").selectOption("rev-ama");
+  await page.getByLabel("Reviewing as").selectOption("rev-eyram");
 
   // A record with an issue: Reviewed is blocked, Needs correction needs a note.
   await row(page, "R003").click();
@@ -89,7 +109,7 @@ test("reviews records without changing validation counts", async ({ page }) => {
   await r003.getByRole("button", { name: "Mark needs correction" }).click();
   await expect(
     r003.getByRole("list", { name: /Review history/ }),
-  ).toContainText("Ama Mensah marked it Needs correction");
+  ).toContainText("Eyram Quashie marked it Needs correction");
   await expect(row(page, "R003")).toContainText("Needs correction");
 
   // A valid record can be marked Reviewed, once.
@@ -125,26 +145,41 @@ test("offers no review actions on excluded records", async ({ page }) => {
 
 test("has no accessibility violations in a real browser, including colour contrast", async ({
   page,
-}) => {
+}, testInfo) => {
   const axePath = createRequire(import.meta.url).resolve("axe-core/axe.min.js");
   await page.addScriptTag({ content: readFileSync(axePath, "utf8") });
-  // Select a row with secondary text (source ID) and let the selected
-  // background finish fading in, so the scan sees the final colours.
+  const scan = () =>
+    page.evaluate(async () => {
+      const result = await (
+        window as unknown as { axe: typeof import("axe-core") }
+      ).axe.run();
+      return result.violations.map((v) => ({
+        id: v.id,
+        help: v.help,
+        nodes: v.nodes
+          .slice(0, 5)
+          .map((n) => `${n.target.join(" ")}: ${n.failureSummary ?? ""}`),
+      }));
+    });
+
+  // 1. An excluded record. Select a row with secondary text (source ID) and
+  // let the selected background finish fading in, so the scan sees the
+  // final colours.
   await row(page, "R006").click();
   await expect(panel(page, "R006")).toBeVisible();
   await page.waitForTimeout(400);
+  let violations = await scan();
+  expect(violations, JSON.stringify(violations, null, 2)).toEqual([]);
 
-  const violations = await page.evaluate(async () => {
-    const result = await (
-      window as unknown as { axe: typeof import("axe-core") }
-    ).axe.run();
-    return result.violations.map((v) => ({
-      id: v.id,
-      help: v.help,
-      nodes: v.nodes
-        .slice(0, 5)
-        .map((n) => `${n.target.join(" ")}: ${n.failureSummary ?? ""}`),
-    }));
-  });
+  // 2. The review form with no reviewer chosen yet (fresh browser storage):
+  // the prompt with its own reviewer picker, and disabled buttons.
+  await row(page, "R003").click();
+  const r003 = panel(page, "R003");
+  await expect(r003.getByLabel("Choose reviewer")).toBeVisible();
+  await page.waitForTimeout(400);
+  await r003
+    .getByRole("form", { name: "Review R003" })
+    .screenshot({ path: testInfo.outputPath("r003-no-reviewer.png") });
+  violations = await scan();
   expect(violations, JSON.stringify(violations, null, 2)).toEqual([]);
 });

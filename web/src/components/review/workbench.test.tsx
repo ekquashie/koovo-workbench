@@ -242,12 +242,12 @@ describe("Workbench", () => {
       const picker = screen.getByLabelText("Reviewing as");
       await waitFor(() => expect(picker).toBeEnabled());
 
-      await user.selectOptions(picker, "rev-kofi");
+      await user.selectOptions(picker, "rev-shiela");
 
-      expect(useReviewerStore.getState().reviewerId).toBe("rev-kofi");
+      expect(useReviewerStore.getState().reviewerId).toBe("rev-shiela");
       expect(
         JSON.parse(localStorage.getItem("koovo.reviewer")!).state.reviewerId,
-      ).toBe("rev-kofi");
+      ).toBe("rev-shiela");
     });
 
     it("ignores a remembered reviewer who no longer exists", async () => {
@@ -271,5 +271,87 @@ describe("Workbench", () => {
         await screen.findByText(/Couldn't load records/),
       ).toBeInTheDocument();
     });
+  });
+});
+
+describe("Filters in the URL", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  /** Opens the workbench at `url`, as if following a shared link. */
+  async function openLink(url: string) {
+    const spy = fakeApi();
+    renderWithProviders(<Workbench />, { url });
+    await screen.findByRole("table", { name: /^Transactions/ });
+    return spy;
+  }
+
+  it("opens a shared link already filtered, without loading everything first", async () => {
+    const spy = await openLink("/?status=needs_attention&client=C01");
+
+    await waitFor(() =>
+      expect(tableRefs()).toEqual(["R003", "R004", "R005", "R011"]),
+    );
+    expect(card(/^Needs attention/)).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByLabelText("Validation status")).toHaveValue(
+      "NEEDS_ATTENTION",
+    );
+    await waitFor(() =>
+      expect(screen.getByLabelText("Client")).toHaveValue("C01"),
+    );
+    // Every list request carried the filters: no unfiltered flash.
+    for (const params of requestsTo(spy, "transactions")) {
+      expect(params).toEqual({ clientId: "C01", status: "NEEDS_ATTENTION" });
+    }
+  });
+
+  it("updates the address bar as filters change, and Clear gives a clean URL", async () => {
+    const user = userEvent.setup();
+    await openLink("/");
+    await screen.findByText("R001");
+
+    await user.click(card(/^Excluded/));
+    expect(window.location.search).toBe("?status=excluded");
+
+    await waitFor(() =>
+      expect(
+        within(screen.getByLabelText("Client")).getAllByRole("option"),
+      ).toHaveLength(3),
+    );
+    await user.selectOptions(screen.getByLabelText("Client"), "C01");
+    expect(window.location.search).toBe("?status=excluded&client=C01");
+
+    await user.click(screen.getByRole("button", { name: "Clear filters" }));
+    expect(window.location.search).toBe("");
+    expect(window.location.pathname).toBe("/");
+  });
+
+  it("ignores an unknown status in a link and shows everything", async () => {
+    await openLink("/?status=banana");
+    await waitFor(() => expect(tableRefs()).toHaveLength(11));
+    expect(
+      screen.queryByRole("button", { name: "Clear filters" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows an unknown client from a link, so the empty table makes sense", async () => {
+    await openLink("/?client=C99");
+    expect(
+      await screen.findByText("No records match these filters."),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Client")).toHaveValue("C99");
+    expect(
+      within(screen.getByRole("group", { name: "Filters" })).getByRole(
+        "button",
+        { name: "Clear filters" },
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("follows Back/Forward to another filtered address", async () => {
+    await openLink("/");
+    await screen.findByText("R001");
+    window.history.pushState(null, "", "/?client=C02");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    await waitFor(() => expect(tableRefs()).toEqual(["R007"]));
   });
 });

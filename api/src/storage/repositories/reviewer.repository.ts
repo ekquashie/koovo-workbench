@@ -3,8 +3,8 @@ import { Reviewer } from '../../reviews/entities/reviewer.entity';
 
 /** Fixed mock list (D4); a real system would read users from auth. */
 export const MOCK_REVIEWERS: readonly Reviewer[] = [
-  new Reviewer({ id: 'rev-ama', name: 'Ama Mensah' }),
-  new Reviewer({ id: 'rev-kofi', name: 'Kofi Asante' }),
+  new Reviewer({ id: 'rev-eyram', name: 'Eyram Quashie' }),
+  new Reviewer({ id: 'rev-shiela', name: 'Shiela Plange' }),
 ];
 
 export abstract class ReviewerRepository {

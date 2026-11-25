@@ -45,7 +45,7 @@ All under `/api/v1` and wrapped as `{ code, message, data }`. Full docs at
 | GET | `/api/v1/transactions/:id` | detail: raw input, amounts, issues, related records, review, history |
 | POST | `/api/v1/transactions/:id/reviews` | `{ action, note?, expectedVersion }` + `X-Reviewer-Id` header |
 | GET | `/api/v1/transactions/:id/activity` | review history, oldest first |
-| GET | `/api/v1/reviewers` | mock reviewers (`rev-ama`, `rev-kofi`) |
+| GET | `/api/v1/reviewers` | mock reviewers (`rev-eyram`, `rev-shiela`) |
 
 Filters are optional and combine; `status` is case-insensitive
 (`VALID`, `NEEDS_ATTENTION`, `EXCLUDED`). Amounts come back as pence
@@ -72,7 +72,7 @@ Send the reviewer in a header and the `review.version` you were shown:
 
 ```bash
 curl -X POST localhost:4000/api/v1/transactions/<id>/reviews \
-  -H 'Content-Type: application/json' -H 'X-Reviewer-Id: rev-ama' \
+  -H 'Content-Type: application/json' -H 'X-Reviewer-Id: rev-eyram' \
   -d '{"action":"MARK_NEEDS_CORRECTION","note":"VAT looks wrong","expectedVersion":0}'
 ```
 

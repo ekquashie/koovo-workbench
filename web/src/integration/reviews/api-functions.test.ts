@@ -14,10 +14,10 @@ describe("createReview", () => {
       expectedVersion: 0,
     };
 
-    await createReview("id-1", "rev-ama", body);
+    await createReview("id-1", "rev-eyram", body);
 
     expect(post).toHaveBeenCalledWith("transactions/id-1/reviews", body, {
-      headers: { "X-Reviewer-Id": "rev-ama" },
+      headers: { "X-Reviewer-Id": "rev-eyram" },
     });
   });
 
@@ -25,12 +25,12 @@ describe("createReview", () => {
     const post = vi.spyOn(apiClient, "post").mockResolvedValue(ok({}, 201));
     await createReview(
       "id-1",
-      "rev-kofi",
+      "rev-shiela",
       { action: "MARK_REVIEWED", expectedVersion: 1 },
       { headers: { "X-Trace": "t1" } },
     );
     expect(post.mock.calls[0][2]).toEqual({
-      headers: { "X-Trace": "t1", "X-Reviewer-Id": "rev-kofi" },
+      headers: { "X-Trace": "t1", "X-Reviewer-Id": "rev-shiela" },
     });
   });
 });

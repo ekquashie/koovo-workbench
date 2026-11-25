@@ -8,7 +8,7 @@ import { createTestQueryClient, wrapperFor } from "@/test/query-wrapper";
 
 const variables = {
   transactionId: "id-1",
-  reviewerId: "rev-ama",
+  reviewerId: "rev-eyram",
   body: { action: "MARK_REVIEWED" as const, expectedVersion: 0 },
 };
 

@@ -11,7 +11,7 @@ import { Workbench } from "./workbench";
 /** Renders the workbench with a record open and (optionally) a reviewer chosen. */
 async function openRecord(
   ref: string,
-  { reviewer = "rev-ama" as string | null } = {},
+  { reviewer = "rev-eyram" as string | null } = {},
 ) {
   const api = fakeApi();
   renderWithProviders(<Workbench />);
@@ -138,6 +138,23 @@ describe("Record detail panel", () => {
       ).toBeDisabled();
     });
 
+    it("lets the reviewer be chosen right in the panel, and keeps the header in sync", async () => {
+      const { panel, user } = await openRecord("R003", { reviewer: null });
+      await user.selectOptions(
+        within(panel).getByLabelText("Choose reviewer"),
+        "rev-shiela",
+      );
+
+      expect(
+        within(panel).getByRole("button", { name: "Mark needs correction" }),
+      ).toBeEnabled();
+      expect(screen.getByLabelText("Reviewing as")).toHaveValue("rev-shiela");
+      // Once chosen, the prompt (and its picker) goes away.
+      expect(
+        within(panel).queryByText(/Choose who is reviewing/),
+      ).not.toBeInTheDocument();
+    });
+
     it("marks a valid record Reviewed, sending the reviewer and the version shown", async () => {
       const { api, panel, user } = await openRecord("R001");
       await user.click(
@@ -152,7 +169,7 @@ describe("Record detail panel", () => {
             note: undefined,
             expectedVersion: 0,
           },
-          reviewer: "rev-ama",
+          reviewer: "rev-eyram",
         },
       ]);
       // The record, its history and the table row refresh.
@@ -161,7 +178,9 @@ describe("Record detail panel", () => {
           0,
         ),
       );
-      expect(await within(panel).findByText("Ama Mensah")).toBeInTheDocument();
+      expect(
+        await within(panel).findByText("Eyram Quashie"),
+      ).toBeInTheDocument();
       expect(
         within(panel).getByRole("button", { name: "Mark reviewed" }),
       ).toBeDisabled();
@@ -272,7 +291,7 @@ describe("Record detail panel", () => {
       );
       await within(panel).findByText("“Check with client”", { selector: "p" });
 
-      useReviewerStore.setState({ reviewerId: "rev-kofi" });
+      useReviewerStore.setState({ reviewerId: "rev-shiela" });
       await user.click(
         within(panel).getByRole("button", { name: "Mark reviewed" }),
       );
@@ -280,7 +299,7 @@ describe("Record detail panel", () => {
       await waitFor(() => expect(api.post).toHaveBeenCalledTimes(2));
       expect(reviewPosts(api)[1]).toMatchObject({
         body: { action: "MARK_REVIEWED", expectedVersion: 1 },
-        reviewer: "rev-kofi",
+        reviewer: "rev-shiela",
       });
       const history = await within(panel).findByRole("list", {
         name: /Review history/,
@@ -290,7 +309,7 @@ describe("Record detail panel", () => {
       );
       // Newest first.
       expect(within(history).getAllByRole("listitem")[0]).toHaveTextContent(
-        "Kofi Asante marked it Reviewed",
+        "Shiela Plange marked it Reviewed",
       );
     });
 
@@ -301,7 +320,7 @@ describe("Record detail panel", () => {
         ...api.items[1].review,
         state: "NEEDS_CORRECTION",
         version: 1,
-        updatedBy: "rev-kofi",
+        updatedBy: "rev-shiela",
       };
 
       await user.click(

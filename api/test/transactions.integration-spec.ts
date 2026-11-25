@@ -199,7 +199,7 @@ describe('Transactions (integration)', () => {
           recordId: id,
           state: ReviewState.REVIEWED,
           note: null,
-          updatedBy: 'rev-ama',
+          updatedBy: 'rev-eyram',
           updatedAt: '2026-11-23T12:00:00.000Z',
         },
         0,
@@ -210,7 +210,7 @@ describe('Transactions (integration)', () => {
       expect(r002.review).toEqual({
         state: 'REVIEWED',
         note: null,
-        updatedBy: 'rev-ama',
+        updatedBy: 'rev-eyram',
         updatedAt: '2026-11-23T12:00:00.000Z',
         version: 1,
       });

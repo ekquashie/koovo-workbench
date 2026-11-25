@@ -26,7 +26,7 @@ export class ReviewsController {
   @Post('reviews')
   @UseGuards(ReviewerGuard)
   @ResponseMessage('Review recorded')
-  @ApiHeader({ name: 'X-Reviewer-Id', required: true, example: 'rev-ama' })
+  @ApiHeader({ name: 'X-Reviewer-Id', required: true, example: 'rev-eyram' })
   @ApiCreatedResponse({ type: ReviewResultDto })
   @ApiUnauthorizedResponse({ description: 'Missing or unknown reviewer' })
   @ApiNotFoundResponse({ description: 'Transaction not found' })

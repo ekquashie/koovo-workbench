@@ -42,7 +42,7 @@ describe("Accessibility (axe-core)", () => {
   });
 
   it("record panel with an issue and the review form", async () => {
-    useReviewerStore.setState({ reviewerId: "rev-ama" });
+    useReviewerStore.setState({ reviewerId: "rev-eyram" });
     await ready();
     await open("R003");
     await expectNoAxeViolations();
@@ -51,7 +51,7 @@ describe("Accessibility (axe-core)", () => {
   it("review form showing a validation error", async () => {
     const user = userEvent.setup();
     await ready();
-    useReviewerStore.setState({ reviewerId: "rev-ama" });
+    useReviewerStore.setState({ reviewerId: "rev-eyram" });
     const panel = await open("R003");
     await user.click(
       within(panel).getByRole("button", { name: "Mark needs correction" }),

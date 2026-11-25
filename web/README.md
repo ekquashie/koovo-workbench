@@ -61,7 +61,7 @@ import {
 
 const { data } = useTransactionsQuery({ clientId: "C01", status: "NEEDS_ATTENTION" });
 const review = useCreateReviewMutation();
-review.mutate({ transactionId, reviewerId: "rev-ama",
+review.mutate({ transactionId, reviewerId: "rev-eyram",
   body: { action: "MARK_REVIEWED", expectedVersion: detail.review.version } });
 ```
 
@@ -74,11 +74,13 @@ review.mutate({ transactionId, reviewerId: "rev-ama",
 
 ## The screen
 
-- **Reviewing as**: choose Ama or Kofi (remembered in localStorage). Needed
+- **Reviewing as**: choose Eyram or Shiela (remembered in localStorage). Needed
   before any review action.
 - **Summary cards**: Valid / Needs attention / Excluded for the chosen
   client. Click a card to filter by that status; click again to clear.
 - **Filters**: client and validation status; *Clear filters* resets both.
+  They live in the URL (`/?status=needs_attention&client=C01`), so a filtered
+  view survives a refresh and can be shared. Bad values in a link are ignored.
 - **Table**: one row per imported record (repeats included), amounts in £
   exactly as the API sends them, `—` for missing, issue names under the
   validation badge (hover for the full message), review state separately.
