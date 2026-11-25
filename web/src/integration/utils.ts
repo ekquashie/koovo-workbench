@@ -24,3 +24,24 @@ export function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
   return "An unexpected error occurred";
 }
+
+/** HTTP status of a failed request, or undefined for network errors. */
+export function getErrorStatus(error: unknown): number | undefined {
+  return error instanceof AxiosError ? error.response?.status : undefined;
+}
+
+/**
+ * Per-field messages from a 400, keyed as the API sends them ("note",
+ * "records.3.total"), for react-hook-form's setError. Undefined otherwise.
+ */
+export function getFieldErrors(
+  error: unknown,
+): Record<string, string> | undefined {
+  if (getErrorStatus(error) !== 400) return undefined;
+  const data = (error as AxiosError<ApiResponse<unknown>>).response?.data;
+  return data?.errors;
+}
+
+/** 409: someone else changed the review; the screen must reload. */
+export const isConflictError = (error: unknown): boolean =>
+  getErrorStatus(error) === 409;

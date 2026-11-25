@@ -4,7 +4,8 @@
 @theme {
   --color-valid: #15803d;
   --color-attention: #b45309;
-  --color-excluded: #6b7280;
+  /* gray-600: 4.5:1+ on the slate-100 badge background (gray-500 was 4.41). */
+  --color-excluded: #4b5563;
 }
 
 body {

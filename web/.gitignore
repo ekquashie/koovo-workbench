@@ -6,6 +6,9 @@
 
 # production
 /dist
+/dist-e2e
+/test-results
+/playwright-report
 
 # misc
 .DS_Store

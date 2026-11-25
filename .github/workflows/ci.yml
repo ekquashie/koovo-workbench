@@ -1,0 +1,141 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [dev, main]
+
+# A newer push to the same branch cancels the run that's still going
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# api/ and web/ are separate pnpm projects (own lockfile each), so each job
+# installs only what it needs. No env vars or services: the API stores data
+# in memory and every setting has a default.
+jobs:
+  api:
+    name: API (types, lint, unit, integration, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Version comes from "packageManager" in the root package.json
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: api/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint:check
+
+      - name: Format
+        run: pnpm format:check
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Integration tests
+        run: pnpm test:integration
+
+      - name: Build
+        run: pnpm build
+
+  web:
+    name: Web (types, lint, tests, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format
+        run: pnpm format:check
+
+      - name: Tests
+        run: pnpm test
+
+      # The API isn't called at build time; this is the URL the bundle will use
+      - name: Build
+        run: pnpm build
+        env:
+          VITE_API_URL: http://localhost:4000/api/v1
+
+  e2e:
+    name: End to end (real API + built UI in Chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: |
+            api/pnpm-lock.yaml
+            web/pnpm-lock.yaml
+
+      # Playwright starts the API from api/, so both projects are installed
+      - run: pnpm --dir api install --frozen-lockfile
+      - run: pnpm --dir web install --frozen-lockfile
+
+      # Locally the tests use the installed Chrome; CI downloads Chromium
+      - name: Install Chromium
+        working-directory: web
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Playwright
+        working-directory: web
+        run: pnpm e2e
+        env:
+          PW_CHANNEL: chromium
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            web/playwright-report
+            web/test-results
+          retention-days: 7

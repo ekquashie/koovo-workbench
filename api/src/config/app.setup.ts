@@ -5,6 +5,7 @@ import {
   VersioningType,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { AppLogger } from '../logger/logger';
 import { FieldValidationException } from '../exceptions/exceptions';
@@ -19,6 +20,8 @@ export function configureApp(app: INestApplication) {
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
   app.enableCors({ origin: [config.get<string>('frontendUrl')!] });
   app.enableShutdownHooks();
+  // Express defaults to 100kb (~400 rows); an import may hold up to 1000.
+  (app as NestExpressApplication).useBodyParser('json', { limit: '1mb' });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

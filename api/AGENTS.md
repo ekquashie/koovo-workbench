@@ -26,6 +26,12 @@ src/
   interceptors/            ResponseInterceptor ({code,message,data})
   logger/                  AppLogger (winston, log/app)
   helper/                  money.ts, transforms.ts, utils.ts
+  storage/                 StorageModule (global): abstract repositories +
+                           Map-backed implementations, VersionConflictError
+  imports/ transactions/ reviews/   enums/ + entities/ (plain classes)
+  transactions/validation/ pure validation engine (parse, rules, repeats)
+  data/                    seed-transactions.json (the brief's dataset)
+  testing/                 test builders (aRaw, recordsFromRaw); not built
 test/*.integration-spec.ts
 ```
 
@@ -40,9 +46,21 @@ A domain module is `src/<name>/` with `<name>.module.ts`, `<name>.controller.ts`
 - **Errors:** throw Nest HTTP exceptions with human-readable messages; use
   `FieldValidationException` for per-field errors.
 - **Validation:** every body/query is a DTO with class-validator decorators;
-  trim strings with `@Transform(trim)`.
+  trim strings with `@Transform(trim)`. Exception: `RawTransactionDto` keeps
+  raw input untouched (parsing trims later).
 - **Versioning:** `/api/v1/...`; only health is `VERSION_NEUTRAL`.
-- **Money:** compare and sum in integer minor units (`toMinor`), never floats.
+- **Storage:** inject the abstract repository (e.g. `ReviewRepository`),
+  never an `InMemory*` class. Map `VersionConflictError` to 409.
+- **Money:** compare and sum in integer minor units, never floats. Parse
+  input with `parseMinor` (decimal string → pence), print with `formatMinor`.
+- **Imports** go through `ImportsService.import()` only (the seed too).
+  After changing stored records, call `ValidationService.revalidateAll()`.
+- **Reviewer:** guard write routes with `@UseGuards(ReviewerGuard)` and read
+  the user with `@CurrentReviewer()`. Business-rule refusals are 422, stale
+  `expectedVersion` is 409.
+- **Decorator order:** class-validator shows the first failing constraint,
+  and stacked decorators register bottom-up; put `IsString`/`IsDefined`
+  lowest (or use `applyDecorators` in reading order).
 - **Config:** new env vars go in `config/configuration.ts` **and** `.env.example`.
 - Short doc comments that explain *why*; no noise comments.
 
