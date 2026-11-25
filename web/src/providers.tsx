@@ -11,7 +11,8 @@ const Providers = ({ children }: { children: ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
-      <Toaster richColors position="top-right" />
+      {/* Top centre: the record panel occupies the right edge. */}
+      <Toaster richColors position="top-center" />
       {children}
     </QueryClientProvider>
   );
